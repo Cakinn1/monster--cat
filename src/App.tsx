@@ -9,6 +9,51 @@ import BottomBanner from "./components/banner/BottomBanner";
 export default function App() {
   const [spotifyData, setSpotifyData] = useState<MusicProps[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("eminem");
+  const [currentSongPlaying, setCurrentSongPlaying] =
+    useState<MusicProps | null>(null);
+  const [likedMusic, setLikedMusic] = useState<MusicProps[]>([]);
+  const [libraryMusic, setLibraryMusic] = useState<MusicProps[]>([]);
+
+  const findCurrentSong = (id: number) => {
+    const findCurrentSong = spotifyData.find((data) => {
+      return data.id === id;
+    });
+    return findCurrentSong;
+  };
+
+  const handleCurrentId = (id: number) => {
+    const currentSong = findCurrentSong(id);
+    if (currentSong) setCurrentSongPlaying(currentSong);
+  };
+
+  const handleAddCurrentSongToLiked = (id: number) => {
+    const currentSong = findCurrentSong(id);
+    if (currentSong) {
+      setLikedMusic((prevData) => {
+        if (prevData.includes(currentSong)) {
+          return prevData.filter((data) => {
+            return data.id !== id;
+          });
+        }
+        return prevData.concat(currentSong);
+      });
+    }
+  };
+
+  const handleAddCurrentSongToLibrary = (id: number) => {
+    const currentSong = findCurrentSong(id);
+    if (currentSong) {
+      setLibraryMusic((prevData) => {
+        if (prevData.includes(currentSong)) {
+          return prevData.filter((data) => {
+            return data.id !== id;
+          });
+        }
+
+        return prevData.concat(currentSong);
+      });
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -23,13 +68,27 @@ export default function App() {
   }, [searchQuery]);
 
   return (
-    <div className="text-white  relative h-screen flex flex-1">
+    <div className="text-white  relative min-h-screen flex flex-1">
       <Router>
-        <LeftBar />
+        <LeftBar  libraryMusic={libraryMusic} />
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route
+            path="/"
+            element={
+              <Landing
+                handleAddCurrentSongToLibrary={handleAddCurrentSongToLibrary}
+                handleCurrentId={handleCurrentId}
+                spotifyData={spotifyData}
+              />
+            }
+          />
         </Routes>
-        <BottomBanner />
+        {currentSongPlaying && (
+          <BottomBanner
+            handleAddCurrentSongToLiked={handleAddCurrentSongToLiked}
+            currentSongPlaying={currentSongPlaying}
+          />
+        )}
       </Router>
     </div>
   );
