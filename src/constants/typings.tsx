@@ -9,7 +9,7 @@ export interface MusicProps {
   artist: Artist;
 }
 
-interface Artist {
+export interface Artist {
   id: number;
   name: string;
   picture: string;
@@ -17,10 +17,25 @@ interface Artist {
   type: string;
 }
 
-interface Albumn {
+export interface Albumn {
   cover: string;
   md5_image: string;
   title: string;
   type: string;
   tracklist: string;
+}
+
+
+export interface TrackProps {
+  id: number;
+  preview: string;
+  rank: number;
+  title: string;
+  title_short: string;
+  type: string;
+  album: Albumn;
+  artist: Artist;
+  result: number;
+  handleSection: (value: string) => void;
+  isSelected: string;
 }
